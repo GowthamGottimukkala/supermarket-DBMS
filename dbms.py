@@ -1,4 +1,5 @@
 import wx
+import random
 
 
 class SuperMarket(wx.Frame):
@@ -85,16 +86,45 @@ class SuperMarket(wx.Frame):
         self.SetMenuBar(menubar)
 
     def Onclicked1(self, e):
+       # panel = wx.Panel(self)
+       # panel.SetBackgroundColour('grey')
+       #  hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+      #  btn1 = wx.Button(panel, label='Insert', size=(70, 30))
+       # hbox5.Add(btn1)
+      #  btn2 = wx.Button(panel, label='Update', size=(70, 30))
+      #  hbox5.Add(btn2, flag=wx.LEFT | wx.BOTTOM, border=5)
+       # vbox.Add(hbox5, flag=wx.ALIGN_RIGHT | wx.RIGHT, border=10)
+   #     panel.SetSizer(vbox)
+   
+        wx.Panel.__init__(self)
+
+        colors = ["red", "blue", "gray", "yellow", "green"]
+        self.SetBackgroundColour(random.choice(colors))
+
+
+        btn = wx.Button(self, label="table")
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(btn, 0, wx.ALL, 10)
+        self.SetSizer(sizer)
+        wx.Frame.__init__(self, None, wx.ID_ANY,
+        "Notebook Tutorial",
+        size=(600,400))
+                          
         panel = wx.Panel(self)
-        panel.SetBackgroundColour('grey')
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-        btn1 = wx.Button(panel, label='Insert', size=(70, 30))
-        hbox5.Add(btn1)
-        btn2 = wx.Button(panel, label='Update', size=(70, 30))
-        hbox5.Add(btn2, flag=wx.LEFT | wx.BOTTOM, border=5)
-        vbox.Add(hbox5, flag=wx.ALIGN_RIGHT | wx.RIGHT, border=10)
-        panel.SetSizer(vbox)
+
+        notebook = wx.Notebook(panel)
+        tabOne = TabPanel(notebook)
+        notebook.AddPage(tabOne, "Tab 1")
+
+        tabTwo = TabPanel(notebook)
+        notebook.AddPage(tabTwo, "Tab 2")
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(notebook, 1, wx.ALL|wx.EXPAND, 5)
+        panel.SetSizer(sizer)
+        self.Layout()
+
+        self.Show()
 
     # def Onclicked2(self, e):
     #     panel = wx.Panel(self)
