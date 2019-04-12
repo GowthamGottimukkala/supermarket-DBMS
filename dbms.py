@@ -57,6 +57,7 @@ class LoginDialog(wx.Dialog):
             wx.MessageBox('Username or password is incorrect!',
                           'Enter Again', wx.OK | wx.ICON_INFORMATION)
             print("Username or password is incorrect!")
+            self.password.Value = ""
 
 
 class SuperMarket(wx.Frame):
@@ -130,10 +131,10 @@ class SuperMarket(wx.Frame):
         self.SetTitle('Super Market')
         self.Center()
         self.Maximize()
-        width, height = wx.GetDisplaySize()
+        self.width, self.height = wx.GetDisplaySize()
 
         # HomePage
-        self.two = wx.Panel(self, size=(width, height))
+        self.two = wx.Panel(self, size=(self.width, self.height))
         self.two.SetBackgroundColour('grey')
         main1 = wx.GridBagSizer(10, 10)
         bill = wx.Button(self.two, label="Billing")
@@ -141,11 +142,9 @@ class SuperMarket(wx.Frame):
         self.two.SetSizer(main1)
         self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill.GetId())
 
-        # Billing
-
         # Tables
-        width, height = wx.GetDisplaySize()
-        self.table = wx.Panel(self, size=(width, height))
+        # width, height = wx.GetDisplaySize()
+        self.table = wx.Panel(self, size=(self.width, self.height))
         self.table.Hide()
         notebook = wx.Notebook(self.table)
         tabOne = TabPanel(notebook)
@@ -156,25 +155,9 @@ class SuperMarket(wx.Frame):
         sizer.Add(notebook, 1, wx.ALL | wx.EXPAND, 5)
         self.table.SetSizer(sizer)
 
-        # EmptyCart
-        # width, height = wx.GetDisplaySize()
-        # self.main3 = wx.GridBagSizer(10, 10)
-        # self.emptycart = wx.Panel(self, size=(width/2, height))
-        # self.emptycart.SetPosition((width/2, 0))
-        # self.emptycart.Hide()
-        # self.emptycart.SetBackgroundColour('red')
-        # self.emptycart1 = wx.StaticText(self.emptycart, label="Cart is empty")
-        # self.main3.Add(self.emptycart1, pos=(
-        #     width/2, 0), flag=wx.ALL, border=5)
-        # self.emptycart.SetSizer(self.main3)
-
-        # LoadedCart
-        # width, height = wx.GetDisplaySize()
-        # self.main4 = wx.GridBagSizer(10, 10)
-        # self.cart = wx.Panel(self, size=(width/2, height))
-        # self.cart.SetPosition((width/2,0))
-        # self.cart.Hide()
-        # self.cart.SetBackgroundColour('grey')
+        # Font
+        self.font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
+        self.font.SetPointSize(15)
 
         # Login
         dlg = LoginDialog()
@@ -186,76 +169,130 @@ class SuperMarket(wx.Frame):
         self.two.Show()
         self.Layout()
 
-    # Functions
+
+# Functions
 
     def billingfun(self, e):
+        print("hello")
         self.two.Hide()
+        self.splitter = wx.SplitterWindow(
+            self, -1, size=(self.width, self.height))
+        # cart panel
+        self.cart = wx.Panel(self.splitter, -1)
+        self.cart.Hide()
+        self.cart.SetBackgroundColour('orange')
+        # hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.bill9 = wx.Button(self.cart, label="Pay", pos=(700, 900))
+        self.bill9.SetFont(self.font)
+        # hbox1.Add(self.bill9, 2)
+        # languages=[]
+        # lst = wx.ListBox(self.cart, size = (100,300), choices = languages, style = wx.LB_SINGLE)
+        # hbox1.Add(lst,1)
+        # self.cart.SetSizer(hbox1)
         self.makebill()
 
-    def makebill(self):
-        width, height = wx.GetDisplaySize()
-        self.main2 = wx.GridBagSizer(10, 10)
-        self.billing = wx.Panel(self, size=(width/2, height))
-        # self.billing.Hide()
-        self.billing.SetBackgroundColour('grey')
-        bill_id = wx.StaticText(self.billing, label=""+str(id))
-        self.main2.Add(bill_id, pos=(2, 10), flag=wx.ALL, border=5)
-        self.bill1 = wx.StaticText(self.billing, label="Enter Product Id")
-        self.bill2 = wx.TextCtrl(self.billing, -1, "")
-        self.main2.Add(self.bill1, pos=(8, 1), flag=wx.ALL, border=5)
-        self.main2.Add(self.bill2, pos=(8, 2), flag=wx.ALL, border=5)
-        forfs = wx.StaticText(self.billing, label=".")
-        self.main2.Add(forfs, pos=(width/2, height), flag=wx.ALL, border=5)
-        # bill9 = wx.Button(self.billing, label="Pay")
-        # self.main2.Add(bill9, pos=(30, 60), flag=wx.ALL, border=5)
-        self.bill8 = wx.Button(self.billing, label="Get Details")
-        self.main2.Add(self.bill8, pos=(9, 2), flag=wx.ALL, border=5)
-        self.Bind(wx.EVT_BUTTON, self.okay2, id=self.bill8.GetId())
-        # self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill9.GetId())
-        self.billing.SetSizer(self.main2)
 
-# when get details is clicked
+# Billing
+
+    def makebill(self):
+        # billing panel
+        # self.main2 = wx.GridBagSizer(10, 10)
+        # width,height=wx.GetDefaultSize()
+        self.billing = wx.Panel(
+            self.splitter, -1, size=(self.width/2, self.height))
+        self.billing.SetBackgroundColour('grey')
+        # bill_id = wx.StaticText(self.billing, label=""+str(id))
+        # self.main2.Add(bill_id, pos=(2, 10), flag=wx.ALL, border=5)
+        self.bill1 = wx.StaticText(
+            self.billing, label="Enter Product Id", pos=(20, 200), size=(20, 20))
+        self.bill1.SetFont(self.font)
+        self.bill2 = wx.TextCtrl(self.billing, -1, "",
+                                 pos=(200, 200), size=(150, 40))
+        self.bill2.SetFont(self.font)
+        # self.main2.Add(self.bill1, pos=(8, 1), flag=wx.ALL, border=5)
+        # self.main2.Add(self.bill2, pos=(8, 2), flag=wx.ALL, border=5)
+        # self.forfs = wx.StaticText(self.billing, label=".")
+        # self.main2.Add(self.forfs, pos=(self.width/2, self.height/2), flag=wx.ALL, border=5)
+        self.bill8 = wx.Button(
+            self.billing, label="Get Details", pos=(200, 250), size=(130, 35))
+        self.bill8.SetFont(self.font)
+        # self.main2.Add(self.bill8, pos=(9, 2), flag=wx.ALL, border=5)
+        self.Bind(wx.EVT_BUTTON, self.okay2, id=self.bill8.GetId())
+        # self.billing.SetSizer(self.main2)
+        self.cart.Show()
+        self.splitter.SplitVertically(self.billing, self.cart)
+
+# when GetDetails is clicked
     def okay2(self, e):
         if self.bill2.GetValue() == "":
-            wx.MessageBox("Some Fields Are Empty!")
+            wx.MessageBox("Enter a Product Id")
         else:
             # sql="select * from aircraft where aid=%s" %(self.tc4.GetValue())
             # cursor = self.query(sql)
             # x=cursor.fetchone()
             self.bill8.Destroy()
-            self.st4 = wx.StaticText(self.billing, label=self.bill2.GetValue())
+            self.st4 = wx.StaticText(
+                self.billing, label=self.bill2.GetValue(), pos=(200, 200), size=(150, 40))
+            self.st4.SetFont(self.font)
             self.bill2.Destroy()
-            self.main2.Add(self.st4, pos=(8, 2), flag=wx.ALL, border=5)
-            self.st5 = wx.StaticText(self.billing, label="Name")
+            # self.main2.Add(self.st4, pos=(8, 2), flag=wx.ALL, border=5)
+            self.st5 = wx.StaticText(
+                self.billing, label="Name", pos=(320, 150), size=(150, 40))
+            self.st5.SetFont(self.font)
             # self.tc5=wx.StaticText(self,-1,x[1])
             # self.gbs.Add(self.tc5, pos = (8, 9), flag = wx.ALL, border = 1)
-            self.st6 = wx.StaticText(self.billing, label="Price")
+            self.st6 = wx.StaticText(
+                self.billing, label="Price", pos=(480, 150), size=(150, 40))
+            self.st6.SetFont(self.font)
             # self.tc6=wx.StaticText(self,-1,str(x[2]))
             # self.gbs.Add(self.tc6, pos = (8, 7), flag = wx.ALL, border = 1)
-            self.bill3 = wx.StaticText(self.billing, label="No.of Items")
-            self.bill4 = wx.TextCtrl(self.billing, -1, "")
+            self.bill3 = wx.StaticText(
+                self.billing, label="No.of Items", pos=(20, 250), size=(150, 40))
+            self.bill3.SetFont(self.font)
+            self.bill4 = wx.TextCtrl(
+                self.billing, -1, "", pos=(200, 250), size=(80, 40))
+            self.bill4.SetFont(self.font)
             # update=wx.Button(self,label="update")
             # self.gbs.Add(update, pos = (8, 10), flag = wx.ALL, border = 1)
-            self.main2.Add(self.st5, pos=(7, 2), flag=wx.ALL, border=5)
-            self.bill7 = wx.Button(self.billing, label="Add to Cart")
-            self.bill6 = wx.Button(self.billing, label="Change Id")
-            self.main2.Add(self.st6, pos=(7, 3	), flag=wx.ALL, border=5)
-            self.main2.Add(self.bill3, pos=(9, 1), flag=wx.ALL, border=5)
-            self.main2.Add(self.bill4, pos=(9, 2), flag=wx.ALL, border=5)
-            self.main2.Add(self.bill7, pos=(10, 2), flag=wx.ALL, border=5)
-            self.main2.Add(self.bill6, pos=(10, 3), flag=wx.ALL, border=5)
+            # self.main2.Add(self.st5, pos=(7, 4), flag=wx.ALL, border=5)
+            self.bill7 = wx.Button(
+                self.billing, label="Add to Cart", pos=(200, 300), size=(120, 35))
+            self.bill7.SetFont(self.font)
+            self.bill6 = wx.Button(
+                self.billing, label="Change Id", pos=(370, 300), size=(120, 35))
+            self.bill6.SetFont(self.font)
+            # self.main2.Add(self.st6, pos=(7, 6), flag=wx.ALL, border=5)
+            # self.main2.Add(self.bill3, pos=(9, 1), flag=wx.ALL, border=5)
+            # self.main2.Add(self.bill4, pos=(9, 2), flag=wx.ALL, border=5)
+            # self.main2.Add(self.bill7, pos=(10, 2), flag=wx.ALL, border=5)
+            # self.main2.Add(self.bill6, pos=(10, 3), flag=wx.ALL, border=5)
             self.Bind(wx.EVT_BUTTON, self.Changeid, id=self.bill6.GetId())
             self.Bind(wx.EVT_BUTTON, self.Addcart, id=self.bill7.GetId())
-            self.billing.SetSizerAndFit(self.main2)
+            # self.billing.SetSizer(self.main2)
 
     def Changeid(self, e):
         self.billing.Destroy()
         self.makebill()
 
     def Addcart(self, e):
-    	self.st4.GetValue()
-        self.billing.Destroy()
-        self.makebill()
+        if self.bill4.GetValue() != '1' and self.bill4.GetValue() != '2' and self.bill4.GetValue() != '3' and self.bill4.GetValue() != '4' and self.bill4.GetValue() != '5' and self.bill4.GetValue() != '6' and self.bill4.GetValue() != '7' and self.bill4.GetValue() != '8' and self.bill4.GetValue() != '9':
+            wx.MessageBox("Enter an Integer !")
+            self.bill4.Value = ""
+        else:
+            self.billing.Destroy()
+            self.makebill()
+            # self.Bind(wx.EVT_BUTTON, self.payment, id=self.bill9.GetId())
+
+    # def payment(self, e):
+    # 	# self.cart.Destroy()
+    # 	self.main5 = wx.GridBagSizer(10, 10)
+    # 	self.pay = wx.Panel(self, size=(self.width, self.height))
+    # 	self.pay.SetBackgroundColour('yellow')
+    # 	self.thank = wx.StaticText(self.pay, label="Payment is Done")
+    # 	self.main5.Add(self.thank, pos=(5, 5), flag=wx.ALL, border=5)
+    # 	self.pay1 = wx.Button(self.payment, label="Make Another Payment")
+    # 	self.main5.Add(self.pay1, pos=(10, 10), flag=wx.ALL, border=5)
+    # 	self.payment.SetSizerAndFit(self.main5)
 
     def Onclicked(self, e):
         self.two.Hide()
