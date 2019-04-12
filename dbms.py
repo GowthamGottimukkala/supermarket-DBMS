@@ -1,5 +1,7 @@
 import wx
 import random
+jkl = 1000
+print(id)
 
 
 class LoginDialog(wx.Dialog):
@@ -12,7 +14,6 @@ class LoginDialog(wx.Dialog):
         """Constructor"""
         wx.Dialog.__init__(self, None, title="Login")
         self.logged_in = False
-
         # user info
         user_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -61,7 +62,6 @@ class LoginDialog(wx.Dialog):
 class SuperMarket(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(SuperMarket, self).__init__(*args, **kwargs)
-
         self.Mbar()
 
     def Mbar(self):
@@ -115,7 +115,7 @@ class SuperMarket(wx.Frame):
 
         # table Menu
         tableMenu = wx.Menu()
-        tableItem=tableMenu.Append(wx.ID_ANY,'&show')
+        tableItem = tableMenu.Append(wx.ID_ANY, '&show')
 
         self.Bind(wx.EVT_MENU, self.Onclicked, id=tableItem.GetId())
 
@@ -130,37 +130,53 @@ class SuperMarket(wx.Frame):
         self.SetTitle('Super Market')
         self.Center()
         self.Maximize()
-
         width, height = wx.GetDisplaySize()
-        self.two = wx.Panel(self,size=(width, height))
-        self.two.SetBackgroundColour('black')
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        font = wx.Font(30, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-        heading = wx.StaticText(self, -1, "Welcome to our supermarket", (100, 50), (width,height), wx.ALIGN_CENTER)
-        heading.SetFont(font)
-        # btn1 = wx.Button(self.two, label='Insert', size=(70, 30))
-        hbox4.Add(heading)
-        # btn2 = wx.Button(self.two, label='Update', size=(70, 30))
-        # hbox4.Add(btn2, flag=wx.LEFT | wx.BOTTOM, border=5,)
-        vbox.Add(hbox4)
-        self.two.SetSizer(vbox)
 
+        # HomePage
+        self.two = wx.Panel(self, size=(width, height))
+        self.two.SetBackgroundColour('grey')
+        main1 = wx.GridBagSizer(10, 10)
+        bill = wx.Button(self.two, label="Billing")
+        main1.Add(bill, pos=(30, 80), flag=wx.ALL, border=5)
+        self.two.SetSizer(main1)
+        self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill.GetId())
 
+        # Billing
+
+        # Tables
         width, height = wx.GetDisplaySize()
-        self.table = wx.Panel(self,size=(width, height))
+        self.table = wx.Panel(self, size=(width, height))
         self.table.Hide()
         notebook = wx.Notebook(self.table)
         tabOne = TabPanel(notebook)
         notebook.AddPage(tabOne, "Table 1")
-
         tabTwo = TabPanel2(notebook)
         notebook.AddPage(tabTwo, "Table 2")
-
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(notebook, 1, wx.ALL | wx.EXPAND, 5)
         self.table.SetSizer(sizer)
 
+        # EmptyCart
+        # width, height = wx.GetDisplaySize()
+        # self.main3 = wx.GridBagSizer(10, 10)
+        # self.emptycart = wx.Panel(self, size=(width/2, height))
+        # self.emptycart.SetPosition((width/2, 0))
+        # self.emptycart.Hide()
+        # self.emptycart.SetBackgroundColour('red')
+        # self.emptycart1 = wx.StaticText(self.emptycart, label="Cart is empty")
+        # self.main3.Add(self.emptycart1, pos=(
+        #     width/2, 0), flag=wx.ALL, border=5)
+        # self.emptycart.SetSizer(self.main3)
+
+        # LoadedCart
+        # width, height = wx.GetDisplaySize()
+        # self.main4 = wx.GridBagSizer(10, 10)
+        # self.cart = wx.Panel(self, size=(width/2, height))
+        # self.cart.SetPosition((width/2,0))
+        # self.cart.Hide()
+        # self.cart.SetBackgroundColour('grey')
+
+        # Login
         dlg = LoginDialog()
         dlg.ShowModal()
         authenticated = dlg.logged_in
@@ -168,16 +184,88 @@ class SuperMarket(wx.Frame):
             self.Close()
 
         self.two.Show()
-
         self.Layout()
 
-    def Onclicked(self,e):
+    # Functions
+
+    def billingfun(self, e):
+        self.two.Hide()
+        self.makebill()
+
+    def makebill(self):
+        width, height = wx.GetDisplaySize()
+        self.main2 = wx.GridBagSizer(10, 10)
+        self.billing = wx.Panel(self, size=(width/2, height))
+        # self.billing.Hide()
+        self.billing.SetBackgroundColour('grey')
+        bill_id = wx.StaticText(self.billing, label=""+str(id))
+        self.main2.Add(bill_id, pos=(2, 10), flag=wx.ALL, border=5)
+        self.bill1 = wx.StaticText(self.billing, label="Enter Product Id")
+        self.bill2 = wx.TextCtrl(self.billing, -1, "")
+        self.main2.Add(self.bill1, pos=(8, 1), flag=wx.ALL, border=5)
+        self.main2.Add(self.bill2, pos=(8, 2), flag=wx.ALL, border=5)
+        forfs = wx.StaticText(self.billing, label=".")
+        self.main2.Add(forfs, pos=(width/2, height), flag=wx.ALL, border=5)
+        # bill9 = wx.Button(self.billing, label="Pay")
+        # self.main2.Add(bill9, pos=(30, 60), flag=wx.ALL, border=5)
+        self.bill8 = wx.Button(self.billing, label="Get Details")
+        self.main2.Add(self.bill8, pos=(9, 2), flag=wx.ALL, border=5)
+        self.Bind(wx.EVT_BUTTON, self.okay2, id=self.bill8.GetId())
+        # self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill9.GetId())
+        self.billing.SetSizer(self.main2)
+
+# when get details is clicked
+    def okay2(self, e):
+        if self.bill2.GetValue() == "":
+            wx.MessageBox("Some Fields Are Empty!")
+        else:
+            # sql="select * from aircraft where aid=%s" %(self.tc4.GetValue())
+            # cursor = self.query(sql)
+            # x=cursor.fetchone()
+            self.bill8.Destroy()
+            self.st4 = wx.StaticText(self.billing, label=self.bill2.GetValue())
+            self.bill2.Destroy()
+            self.main2.Add(self.st4, pos=(8, 2), flag=wx.ALL, border=5)
+            self.st5 = wx.StaticText(self.billing, label="Name")
+            # self.tc5=wx.StaticText(self,-1,x[1])
+            # self.gbs.Add(self.tc5, pos = (8, 9), flag = wx.ALL, border = 1)
+            self.st6 = wx.StaticText(self.billing, label="Price")
+            # self.tc6=wx.StaticText(self,-1,str(x[2]))
+            # self.gbs.Add(self.tc6, pos = (8, 7), flag = wx.ALL, border = 1)
+            self.bill3 = wx.StaticText(self.billing, label="No.of Items")
+            self.bill4 = wx.TextCtrl(self.billing, -1, "")
+            # update=wx.Button(self,label="update")
+            # self.gbs.Add(update, pos = (8, 10), flag = wx.ALL, border = 1)
+            self.main2.Add(self.st5, pos=(7, 2), flag=wx.ALL, border=5)
+            self.bill7 = wx.Button(self.billing, label="Add to Cart")
+            self.bill6 = wx.Button(self.billing, label="Change Id")
+            self.main2.Add(self.st6, pos=(7, 3	), flag=wx.ALL, border=5)
+            self.main2.Add(self.bill3, pos=(9, 1), flag=wx.ALL, border=5)
+            self.main2.Add(self.bill4, pos=(9, 2), flag=wx.ALL, border=5)
+            self.main2.Add(self.bill7, pos=(10, 2), flag=wx.ALL, border=5)
+            self.main2.Add(self.bill6, pos=(10, 3), flag=wx.ALL, border=5)
+            self.Bind(wx.EVT_BUTTON, self.Changeid, id=self.bill6.GetId())
+            self.Bind(wx.EVT_BUTTON, self.Addcart, id=self.bill7.GetId())
+            self.billing.SetSizerAndFit(self.main2)
+
+    def Changeid(self, e):
+        self.billing.Destroy()
+        self.makebill()
+
+    def Addcart(self, e):
+    	self.st4.GetValue()
+        self.billing.Destroy()
+        self.makebill()
+
+    def Onclicked(self, e):
         self.two.Hide()
         if self.table.IsShown():
             self.two.Show()
             self.table.Hide()
         else:
             self.table.Show()
+            self.billing.Hide()
+
     def OnQuit(self, e):
         self.Close()
 
@@ -233,31 +321,31 @@ class TabPanel2(wx.Panel):
 
 
 '''class DemoFrame(wx.Frame):
-    """
-    Frame that holds all other widgets
-    """
+	"""
+	Frame that holds all other widgets
+	"""
 
-    def __init__(self):
-        """Constructor"""        
-        wx.Frame.__init__(self, None, wx.ID_ANY, 
-                          "Notebook Tutorial",
-                          size=(600,400)
-                          )
-        panel = wx.Panel(self)
+	def __init__(self):
+		"""Constructor"""
+		wx.Frame.__init__(self, None, wx.ID_ANY,
+						  "Notebook Tutorial",
+						  size=(600,400)
+						  )
+		panel = wx.Panel(self)
 
-        notebook = wx.Notebook(panel)
-        tabOne = TabPanel(notebook)
-        notebook.AddPage(tabOne, "Table 1")
+		notebook = wx.Notebook(panel)
+		tabOne = TabPanel(notebook)
+		notebook.AddPage(tabOne, "Table 1")
 
-        tabTwo = TabPanel2(notebook)
-        notebook.AddPage(tabTwo, "Table 2")
+		tabTwo = TabPanel2(notebook)
+		notebook.AddPage(tabTwo, "Table 2")
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(notebook, 1, wx.ALL|wx.EXPAND, 5)
-        panel.SetSizer(sizer)
-        self.Layout()
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		sizer.Add(notebook, 1, wx.ALL|wx.EXPAND, 5)
+		panel.SetSizer(sizer)
+		self.Layout()
 
-        self.Show()'''
+		self.Show()'''
 
 
 def main():
