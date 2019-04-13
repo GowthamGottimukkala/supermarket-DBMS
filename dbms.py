@@ -1,10 +1,8 @@
 import wx
 import random
 import MySQLdb
-jkl = 1000
-print(id)
 
-
+count=100
 db=MySQLdb.connect("localhost","shravan","shravan","supermarket")
 cursor=db.cursor()
 
@@ -124,7 +122,6 @@ class LoginDialog2(wx.Dialog):
 			print("You are now logged in!")
 			self.logged_in = True
 			self.Close()
-			self.x_lbl.Destroy()
 		elif user_name=="" or user_password!=k2 :
 			 wx.MessageBox('Username or password is incorrect!',
 						  'Enter Again', wx.OK | wx.ICON_INFORMATION)
@@ -191,6 +188,7 @@ class SuperMarket(wx.Frame):
 
 	def Mbar(self):
 
+		self.width, self.height = wx.GetDisplaySize()
 		menubar = wx.MenuBar()
 
 		# File Menu
@@ -255,16 +253,18 @@ class SuperMarket(wx.Frame):
 		self.SetTitle('Super Market')
 		self.Center()
 		self.Maximize()
-		self.width, self.height = wx.GetDisplaySize()
 
 		# HomePage
 		self.two = wx.Panel(self, size=(self.width, self.height))
 		self.two.SetBackgroundColour('grey')
 		main1 = wx.GridBagSizer(10, 10)
 		bill = wx.Button(self.two, label="Billing")
+		info = wx.Button(self.two, label="Info")
 		main1.Add(bill, pos=(30, 80), flag=wx.ALL, border=5)
+		main1.Add(info, pos=(30, 40), flag=wx.ALL, border=5)
 		self.two.SetSizer(main1)
 		self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill.GetId())
+		self.Bind(wx.EVT_BUTTON, self.billingfun, id=info.GetId())
 
 		# Tables
 		# width, height = wx.GetDisplaySize()
@@ -289,6 +289,9 @@ class SuperMarket(wx.Frame):
 # Functions
 
 	def billingfun(self, e):
+		sql="create table bill"+str(count)+"(pid int not null,pname varchar(20),price float,items int,amount float );"
+		cursor=self.query(sql)
+		
 		print("hello")
 		self.two.Hide()
 		self.splitter = wx.SplitterWindow(
@@ -298,10 +301,12 @@ class SuperMarket(wx.Frame):
 		self.cart.Hide()
 		self.cart.SetBackgroundColour('orange')
 		# hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-		self.cart1 = wx.StaticText(self.cart, label="Your Cart is Empty", pos=(370, 500), size=(20, 20))
+		self.cart1 = wx.StaticText(
+			self.cart, label="Your Cart is Empty", pos=(370, 500), size=(20, 20))
 		self.cart1.SetFont(self.font)
 		self.bill9 = wx.Button(self.cart, label="Pay", pos=(700, 900))
 		self.bill9.SetFont(self.font)
+		self.bill9.Hide()
 		# hbox1.Add(self.bill9, 2)
 		# languages=[]
 		# lst = wx.ListBox(self.cart, size = (100,300), choices = languages, style = wx.LB_SINGLE)
@@ -310,7 +315,7 @@ class SuperMarket(wx.Frame):
 		self.makebill()
 
 
-
+# Billing
 
 	def makebill(self):
 		# billing panel
@@ -344,9 +349,13 @@ class SuperMarket(wx.Frame):
 		if self.bill2.GetValue() == "":
 			wx.MessageBox("Enter a Product Id")
 		else:
-			# sql="select * from aircraft where aid=%s" %(self.tc4.GetValue())
-			# cursor = self.query(sql)
-			# x=cursor.fetchone()
+			sql="select * from products where pid=%s" %(self.bill2.GetValue())
+			cursor = self.query(sql)
+			self.x=cursor.fetchone()
+
+			
+			self.k=str(self.x[1])
+			self.k1=str(self.x[2])
 			self.bill8.Destroy()
 			self.st4 = wx.StaticText(
 				self.billing, label=self.bill2.GetValue(), pos=(250, 200), size=(150, 40))
@@ -356,19 +365,18 @@ class SuperMarket(wx.Frame):
 			self.st5 = wx.StaticText(
 				self.billing, label="Name", pos=(370, 150), size=(150, 40))
 			self.st5.SetFont(self.font)
-			# self.tc5=wx.StaticText(self,-1,x[1])
-			# self.gbs.Add(self.tc5, pos = (8, 9), flag = wx.ALL, border = 1)
+			self.tc5=wx.StaticText(self.billing,-1,label=self.k,pos=(370, 200), size=(150, 40))
 			self.st6 = wx.StaticText(
 				self.billing, label="Price", pos=(530, 150), size=(150, 40))
 			self.st6.SetFont(self.font)
-			# self.tc6=wx.StaticText(self,-1,str(x[2]))
-			# self.gbs.Add(self.tc6, pos = (8, 7), flag = wx.ALL, border = 1)
+			self.tc6=wx.StaticText(self.billing,-1,label=self.k1,pos=(530, 200), size=(150, 40))
 			self.bill3 = wx.StaticText(
 				self.billing, label="No.of Items", pos=(20, 250), size=(150, 40))
 			self.bill3.SetFont(self.font)
 			self.bill4 = wx.TextCtrl(
 				self.billing, -1, "", pos=(200, 250), size=(80, 40))
 			self.bill4.SetFont(self.font)
+
 			# update=wx.Button(self,label="update")
 			# self.gbs.Add(update, pos = (8, 10), flag = wx.ALL, border = 1)
 			# self.main2.Add(self.st5, pos=(7, 4), flag=wx.ALL, border=5)
@@ -386,6 +394,20 @@ class SuperMarket(wx.Frame):
 			self.Bind(wx.EVT_BUTTON, self.Changeid, id=self.bill6.GetId())
 			self.Bind(wx.EVT_BUTTON, self.Addcart, id=self.bill7.GetId())
 			# self.billing.SetSizer(self.main2)
+	def connect(self):
+			self.conn = MySQLdb.connect("localhost","shravan","shravan","supermarket")
+
+	def query(self, sql):
+		try:
+		  cursor = self.conn.cursor()
+		  cursor.execute(sql)
+		  self.conn.commit()
+		except (AttributeError, MySQLdb.OperationalError):
+		  self.connect()
+		  cursor = self.conn.cursor()
+		  cursor.execute(sql)
+		  self.conn.commit()
+		return cursor
 
 	def Changeid(self, e):
 		self.billing.Destroy()
@@ -396,21 +418,83 @@ class SuperMarket(wx.Frame):
 			wx.MessageBox("Enter an Integer !")
 			self.bill4.Value = ""
 		else:
+			z=self.x[2]*int(self.bill4.GetValue())
+			sql="insert into bill"+str(count)+" values("+str(self.st4.GetLabel())+",'"+self.k+"','"+self.k1+"',"+str(self.bill4.GetValue())+",'"+str(z)+"')"
+			cursor=self.query(sql)
 			self.billing.Destroy()
 			self.makebill()
 			self.cart1.Destroy()
-			# self.Bind(wx.EVT_BUTTON, self.payment, id=self.bill9.GetId())
+			self.bill9.Show()
+			self.Bind(wx.EVT_BUTTON, self.payment, id=self.bill9.GetId())
 
-	# def payment(self, e):
-	# 	# self.cart.Destroy()
-	# 	self.main5 = wx.GridBagSizer(10, 10)
-	# 	self.pay = wx.Panel(self, size=(self.width, self.height))
-	# 	self.pay.SetBackgroundColour('yellow')
-	# 	self.thank = wx.StaticText(self.pay, label="Payment is Done")
-	# 	self.main5.Add(self.thank, pos=(5, 5), flag=wx.ALL, border=5)
-	# 	self.pay1 = wx.Button(self.payment, label="Make Another Payment")
-	# 	self.main5.Add(self.pay1, pos=(10, 10), flag=wx.ALL, border=5)
-	# 	self.payment.SetSizerAndFit(self.main5)
+	def payment(self, e):
+		self.billing.Destroy()
+		self.cart.Destroy()
+		self.pay = wx.Panel(self, size=(self.width, self.height))
+		self.pay.SetBackgroundColour('yellow')
+		self.pay1 = wx.StaticText(self.pay, label="Enter Cust Num", pos=(20, 200), size=(20, 20))
+		self.pay1.SetFont(self.font)
+		self.pay2 = wx.TextCtrl(self.pay, -1, "",pos=(200, 200), size=(150, 40))
+		self.pay2.SetFont(self.font)
+		self.pay3 = wx.Button(self.pay, label="Get Details", pos=(200, 250), size=(130, 35))
+		self.pay3.SetFont(self.font)
+		self.Bind(wx.EVT_BUTTON, self.customer, id=self.pay3.GetId())
+		
+	def customer(self,e):
+		self.pay3.Destroy()
+		sql="select * from customers where mnumber="+str(self.pay2.GetValue())
+		cursor=self.query(sql)
+		self.y=cursor.fetchone()
+		print self.y
+		
+		sql="select mnumber from customers"
+		cursor=self.query(sql)
+		self.a=cursor.fetchall()
+		for i in self.a:
+			if(i==self.a):
+				self.j=i
+				break
+			else:
+				self.j=0
+		length=len(str(self.pay2.GetValue()))
+		if self.pay2.GetValue() == "" or length!=10:
+			self.pay4 = wx.StaticText(self.pay, label="Customer Not present", pos=(50, 250), size=(40, 20))
+			self.pay4.SetFont(self.font)
+			self.pay5 = wx.Button(self.pay, label="Sign Up", pos=(200, 290), size=(130, 35))
+			self.pay5.SetFont(self.font)
+		elif self.j==0:
+			self.pay4 = wx.StaticText(self.pay, label="Customer Not present", pos=(50, 250), size=(40, 20))
+			self.pay4.SetFont(self.font)
+			self.pay5 = wx.Button(self.pay, label="Sign Up", pos=(200, 290), size=(130, 35))
+			self.pay5.SetFont(self.font)
+		else:
+			self.k2=str(self.y[1])
+			self.cus1 = wx.StaticText(self.pay, label=self.pay2.GetValue(), pos=(200, 200), size=(150, 40))
+			self.cus1.SetFont(self.font)
+			self.pay2.Destroy()
+			self.cus2 = wx.StaticText(self.pay, label="Name", pos=(320, 150), size=(150, 40))
+			self.cus2.SetFont(self.font)
+			self.cus4 = wx.StaticText(self.pay, label=self.k2, pos=(320, 200), size=(150, 40))
+			self.cus4.SetFont(self.font)
+			self.cus3 = wx.Button(self.pay, label="Pay Now", pos=(200, 300), size=(120, 35))
+			self.cus3.SetFont(self.font)
+			self.Bind(wx.EVT_BUTTON,self.final,id=self.cus3.GetId())
+
+	def final(self,e):
+		self.pay1.Destroy()
+		self.cus1.Destroy()
+		self.cus2.Destroy()
+		self.cus3.Destroy()
+		self.cus4.Destroy()
+		self.thank = wx.StaticText(self.pay, label="Payment is Done", pos=(700, 200), size=(200, 200))
+		self.thank.SetFont(self.font)
+		self.pay4 = wx.Button(self.pay, label="Back to Homepage", pos=(1500, 900),size=(220,35))
+		self.Bind(wx.EVT_BUTTON,self.back,id=self.pay4.GetId())
+		self.pay4.SetFont(self.font)
+		
+	def back(self,e):
+		self.pay.Destroy()
+		self.two.Show()
 
 	def Onclicked(self, e):
 		self.two.Hide()
@@ -420,6 +504,7 @@ class SuperMarket(wx.Frame):
 		else:
 			self.table.Show()
 			self.billing.Hide()
+			self.cart.Hide()
 
 	def OnQuit(self, e):
 		self.Close()
