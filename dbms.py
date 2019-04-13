@@ -182,6 +182,8 @@ class SuperMarket(wx.Frame):
         self.cart.Hide()
         self.cart.SetBackgroundColour('orange')
         # hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.cart1 = wx.StaticText(self.cart, label="Your Cart is Empty", pos=(370, 500), size=(20, 20))
+        self.cart1.SetFont(self.font)
         self.bill9 = wx.Button(self.cart, label="Pay", pos=(700, 900))
         self.bill9.SetFont(self.font)
         # hbox1.Add(self.bill9, 2)
@@ -203,8 +205,7 @@ class SuperMarket(wx.Frame):
         self.billing.SetBackgroundColour('grey')
         # bill_id = wx.StaticText(self.billing, label=""+str(id))
         # self.main2.Add(bill_id, pos=(2, 10), flag=wx.ALL, border=5)
-        self.bill1 = wx.StaticText(
-            self.billing, label="Enter Product Id", pos=(20, 200), size=(20, 20))
+        self.bill1 = wx.StaticText(self.billing, label="Enter Product Id", pos=(20, 200), size=(20, 20))
         self.bill1.SetFont(self.font)
         self.bill2 = wx.TextCtrl(self.billing, -1, "",
                                  pos=(200, 200), size=(150, 40))
@@ -281,6 +282,7 @@ class SuperMarket(wx.Frame):
         else:
             self.billing.Destroy()
             self.makebill()
+            self.cart1.Destroy()
             # self.Bind(wx.EVT_BUTTON, self.payment, id=self.bill9.GetId())
 
     # def payment(self, e):
