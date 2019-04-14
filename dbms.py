@@ -1,7 +1,7 @@
 import wx
 import random
 import MySQLdb
-
+#import ol_3
 count=100
 db=MySQLdb.connect("localhost","shravan","shravan","supermarket")
 cursor=db.cursor()
@@ -264,7 +264,7 @@ class SuperMarket(wx.Frame):
 		main1.Add(info, pos=(30, 40), flag=wx.ALL, border=5)
 		self.two.SetSizer(main1)
 		self.Bind(wx.EVT_BUTTON, self.billingfun, id=bill.GetId())
-		self.Bind(wx.EVT_BUTTON, self.billingfun, id=info.GetId())
+		#self.Bind(wx.EVT_BUTTON, self., id=info.GetId())
 
 		# Tables
 		# width, height = wx.GetDisplaySize()
@@ -560,32 +560,7 @@ class TabPanel2(wx.Panel):
 		self.SetSizer(sizer)
 
 
-'''class DemoFrame(wx.Frame):
-	"""
-	Frame that holds all other widgets
-	"""
 
-	def __init__(self):
-		"""Constructor"""
-		wx.Frame.__init__(self, None, wx.ID_ANY,
-						  "Notebook Tutorial",
-						  size=(600,400)
-						  )
-		panel = wx.Panel(self)
-
-		notebook = wx.Notebook(panel)
-		tabOne = TabPanel(notebook)
-		notebook.AddPage(tabOne, "Table 1")
-
-		tabTwo = TabPanel2(notebook)
-		notebook.AddPage(tabTwo, "Table 2")
-
-		sizer = wx.BoxSizer(wx.VERTICAL)
-		sizer.Add(notebook, 1, wx.ALL|wx.EXPAND, 5)
-		panel.SetSizer(sizer)
-		self.Layout()
-
-		self.Show()'''
 
 
 def main():
